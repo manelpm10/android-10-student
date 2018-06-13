@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +20,9 @@ import es.pue.android.student.model.Student;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Student student;
+    private Student student = null;
+    private Button btnSaveInSD = null;
+    File fileData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         buildStudent();
+
+        btnSaveInSD = findViewById(R.id.btnSaveInSD);
+        // Disable button if SD is not enabled.
+        if (!Util.isExternalStorageAvailable() || Util.isExternalStorageReadOnly()) {
+            btnSaveInSD.setEnabled(false);
+        } else {
+            // getExternalFilesDir defines if we are in SD.
+            fileData = new File(getExternalFilesDir(Constants.STUDENT_SD_FILEPATH), Constants.STUDENT_FILE);
+            // TODO write as a normal file.
+        }
+
         // Save student in shared preferences.
         writeStudentInSharedPreferences();
 
@@ -65,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public void saveInSD(View view) {
 
     }
 }
